@@ -7,12 +7,13 @@ https://developer.valvesoftware.com/wiki/List_of_TF2_Script_Functions
 */
 
 //--------------------------------------------------------------||-------------------------------------------------------------
-//script_execute give_tf_weapon/_master
-// script_reload_code give_tf_weapon/custom_weapons
-
+//	script_execute give_tf_weapon/_master
+//	script_reload_code give_tf_weapon/custom_weapons
+//	script GetListenServerHost().GiveWeapon("My Weapon Here")
+//script_execute give_tf_weapon/_master;script GetListenServerHost().GiveWeapon("Ambassador 2");script GetListenServerHost().GiveWeapon("Dead Ringer 2")
 //SPY TWEAKS
 	//----------------------------------------------------------AMBASSADOR---------------------------------------------------------
-
+		//	script GetListenServerHost().GiveWeapon("Ambassador 2")
 		/*
 		The Ambassador as-is in vanilla TF2 is pretty undesirable. It takes thousands of hours to master, and is a direct downgrade from stock if you aren't breathing on your opponent
 
@@ -34,7 +35,7 @@ https://developer.valvesoftware.com/wiki/List_of_TF2_Script_Functions
 			weapon.AddAttribute("revolver use hit locations", 1, -1)	//	Use body groups. Allows Ambassador to headshot
 			weapon.AddAttribute("damage penalty",0.85,-1)				//	Reduce damage by 15% so headshots do 102 damage
 			weapon.AddAttribute("fire rate penalty",0.8,-1)				//	20% slower firing speed
-			printl(player.CheckItems())
+			// printl(player.CheckItems())
 
 		}
 
@@ -43,6 +44,7 @@ https://developer.valvesoftware.com/wiki/List_of_TF2_Script_Functions
 	//-----------------------------------------------------------------------------------------------------------------------------
 
 	//----------------------------------------------------------DEAD RINGER--------------------------------------------------------
+		//	script GetListenServerHost().GiveWeapon("Dead Ringer 2")
 		
 		/*
 		The Dead Ringer as-is in vanilla TF2 is pretty undesirable. The other two invis watches are far more reliable.
@@ -65,8 +67,8 @@ https://developer.valvesoftware.com/wiki/List_of_TF2_Script_Functions
 
 		function DeadRinger(weapon, player) {
 			weapon.AddAttribute("set cloak is feign death",1,-1)					// Use the feign cloak type to grant damage resistance, speed, and drop a fake corpse
-			weapon.AddAttribute("ReducedCloakFromAmmo",0.33,-1)						// Although Dead Ringer spam was rightfully nerfed, removing the ability to get cloak from ammo was overkill IMO	
-			weapon.AddAttribute("cloak_consume_on_feign_death_activate",0,-1)	// Gotta have downsides
+			weapon.AddAttribute("ReducedCloakFromAmmo",0.1,-1)						// Although Dead Ringer spam was rightfully nerfed, removing the ability to get cloak from ammo was overkill IMO	
+			weapon.AddAttribute("cloak_consume_on_feign_death_activate",0.8,-1)	// Gotta have downsides
 			//notice the lack of faster regen and longer cloak duration. The added ability to get cloak from ammo boxes offsets this pretty well IMO
 
 		}
@@ -77,6 +79,9 @@ https://developer.valvesoftware.com/wiki/List_of_TF2_Script_Functions
 	//-----------------------------------------------------------ENFORCER---------------------------------------------------------
 		
 		/*
+		//	script GetListenServerHost().GiveWeapon("Enforcer 2")
+		
+
 		The enforcer, as is, is not very good. It fires slow, and rarely offers a damage bonus as you have to both be disguised and hit the first shot
 
 
@@ -120,6 +125,8 @@ https://developer.valvesoftware.com/wiki/List_of_TF2_Script_Functions
 //SPY CUSTOM
 	//--------------------------------------------------------SILENT STABBER-------------------------------------------------------
 
+		//	script GetListenServerHost().GiveWeapon("Silent Stabber")
+
 		/*
 		Kill the enemy, leave no trace 
 		silent killer
@@ -127,38 +134,56 @@ https://developer.valvesoftware.com/wiki/List_of_TF2_Script_Functions
 
 		function SilentStabber(weapon, player) {
 				weapon.AddAttribute("silent killer",1,-1)				// Silent Killer
-				weapon.AddAttribute("disguise on backstab`",1,-1)		// disguise on backstab
-				weapon.AddAttribute("damage penalty",0.5,-1)			// Half Damage bleeding duration
+				weapon.AddAttribute("disguise on backstab",1,-1)		// disguise on backstab(TEST)
+				weapon.AddAttribute("damage penalty",0.1,-1)			// Half Damage bleeding duration
 				weapon.AddAttribute("bleeding duration",3,-1)			// Half Damage
-				weapon.AddAttribute("hit self on miss",10,0)			// Hit yourself on a miss
+				weapon.AddAttribute("hit self on miss",1,0)			// Hit yourself on a miss
+				weapon.AddAttribute("mod_disguise_consumes_cloak",1,0)			// Hit yourself on a miss
+
 
 
 
 
 		}
 
-			RegisterCustomWeapon("Silent Stabber", "Knife", false, SilentStabber, null, null)	//register the weapon
+			RegisterCustomWeapon("Silent Stabber", "Wanga Prick", false, SilentStabber, null, null)	//register the weapon
 
 	//-----------------------------------------------------------------------------------------------------------------------------
 
 
 	//----------------------------------------------------BACKSTABBER'S BACKPACK---------------------------------------------------
 
+		//	script GetListenServerHost().GiveWeapon("Backstabbers Backpack")
+
 		/*
-		Kill the enemy, leave no trace 
-		silent killer
+		
 		*/
 
-		function SilentStabber(weapon, player) {
-				weapon.AddAttribute("silent killer",1,-1)		// Silent Killer
-				weapon.AddAttribute("disguise on backstab`",1,-1)	// disguise on backstab
-				weapon.AddAttribute("hit self on miss",1,-1)	// Hit yourself on a miss
+		function BackstabbersBackpack(weapon, player) {
+			// const DAMAGE_RESISTANCE = 0.1	//10%
+			weapon.AddAttribute("cloak meter regen rate",20,-1)						//	+X% cloak regen rate
+			weapon.AddAttribute("health regen",4,-1)										//	+X health regenerated per second on wearer
+			
+
+			weapon.AddAttribute("dmg taken from fire reduced",0.7,-1)					//	+X% fire damage resistance on wearer
+			weapon.AddAttribute("dmg taken from crit reduced",0.7,-1)					//	+X% critical hit damage resistance on wearer
+			weapon.AddAttribute("dmg taken from blast reduced",0.7,-1)					//	+X% explosive damage resistance on wearer
+			weapon.AddAttribute("dmg taken from bulets reduced",0.7,-1)					//	+X% bullet damage resistance on wearer
+			
+			weapon.AddAttribute("cloak regen rate decreased",1,-1)					//	+X% bullet damage resistance on wearer
+
+
+
+
+
 
 		}
 
-			RegisterCustomWeapon("Silent Stabber", "Knife", false, SilentStabber, null, null)	//register the weapon
+			RegisterCustomWeapon("Backstabbers Backpack", "Sapper", true, BackstabbersBackpack, null, null)	//register the weapon
 
 	//-----------------------------------------------------------------------------------------------------------------------------
+
+	
 
 	
 
