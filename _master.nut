@@ -35,7 +35,20 @@ function OnGameEvent_post_inventory_application(params)
 ::CVAR_GTFW_ENABLEWEAPON_AUTO_SWITCH <- false		// Automatically switches weapon to another if re-enabling a weapon. False by default.
 Convars.SetValue("tf_dropped_weapon_lifetime", 0)	//disables dropped weapons because they're buggy with this script
 
-IncludeScript("give_tf_weapon/tables.nut")	// All TF2 weapons listed in tables
-IncludeScript("give_tf_weapon/code.nut")	// All give_tf_weapon code
-IncludeScript("give_tf_weapon/custom_weapons.nut")	// All custom weapons
+//include library scripts
+	IncludeScript("give_tf_weapon/tables.nut")	// AllTF2 weapons listed in tables
+	IncludeScript("give_tf_weapon/code.nut")	// All give_tf_weapon code
+
+
+
+//Include each class's custom weapons and reworks
+	IncludeScript("give_tf_weapon/custom_weapons/scout.nut")	// All of scout's custom weapons
+	IncludeScript("give_tf_weapon/custom_weapons/soldier.nut")	// All of soldier's custom weapons
+	IncludeScript("give_tf_weapon/custom_weapons/pyro.nut")		// All of pyro's custom weapons
+	IncludeScript("give_tf_weapon/custom_weapons/demoman.nut")	// All of demoman's custom weapons
+	IncludeScript("give_tf_weapon/custom_weapons/heavy.nut")	// All of heavy's custom weapons
+	IncludeScript("give_tf_weapon/custom_weapons/engineer.nut")	// All of engineer's custom weapons
+	IncludeScript("give_tf_weapon/custom_weapons/medic.nut")	// All of medic's custom weapons
+	IncludeScript("give_tf_weapon/custom_weapons/sniper.nut")	// All of sniper's custom weapons
+	IncludeScript("give_tf_weapon/custom_weapons/spy.nut")		// All of spy's custom weapons
 
