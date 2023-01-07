@@ -1,16 +1,22 @@
 /*
-Find documentation at:
-https://wiki.teamfortress.com/wiki/List_of_item_attributes
-https://developer.valvesoftware.com/wiki/VScript
-https://developer.valvesoftware.com/wiki/List_of_TF2_Script_Functions
-
+	References:
+		https://wiki.teamfortress.com/wiki/List_of_item_attributes
+		https://developer.valvesoftware.com/wiki/VScript
+		https://developer.valvesoftware.com/wiki/List_of_TF2_Script_Functions
+		https://developer.valvesoftware.com/wiki/Squirrel
+		1 tick is half a second
 */
 
 //--------------------------------------------------------------||-------------------------------------------------------------
-//	script_execute give_tf_weapon/_master
-//	script_reload_code give_tf_weapon/custom_weapons
-//	script GetListenServerHost().GiveWeapon("My Weapon Here")
-//script_execute give_tf_weapon/_master;script GetListenServerHost().GiveWeapon("Ambassador 2");script GetListenServerHost().GiveWeapon("Dead Ringer 2")
+	//	script_execute give_tf_weapon/_master
+	//	script_reload_code give_tf_weapon/custom_weapons
+	//	script GetListenServerHost().GiveWeapon("My Weapon Here")
+	//	script_execute give_tf_weapon/_master
+
+	//	script GetListenServerHost().GiveWeapon("Ambassador 2")
+	//	script GetListenServerHost().GiveWeapon("Dead Ringer 2")
+	//bot -name "test dummy" -class soldier -team red
+
 //SPY TWEAKS
 	//----------------------------------------------------------AMBASSADOR---------------------------------------------------------
 		//	script GetListenServerHost().GiveWeapon("Ambassador 2")
@@ -22,13 +28,13 @@ https://developer.valvesoftware.com/wiki/List_of_TF2_Script_Functions
 		The following changes have been made:
 
 			- Removed critical hit damage falloff
-		
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
+
 		*/
 
 		function Ambassador(weapon, player) {
@@ -45,7 +51,7 @@ https://developer.valvesoftware.com/wiki/List_of_TF2_Script_Functions
 
 	//----------------------------------------------------------DEAD RINGER--------------------------------------------------------
 		//	script GetListenServerHost().GiveWeapon("Dead Ringer 2")
-		
+
 		/*
 		The Dead Ringer as-is in vanilla TF2 is pretty undesirable. The other two invis watches are far more reliable.
 		The Dead Ringer is meant to be a tool to trick opponents into thinking you are dead, while you are not. Due to the fact that it has offered absurd damage resistances, its true purpose has been overshadowed by the damage resistance it offers
@@ -55,32 +61,63 @@ https://developer.valvesoftware.com/wiki/List_of_TF2_Script_Functions
 		The following changes have been made:
 
 			- The Dead ringer can now replenish cloak via ammo pickups, dispensers, and payload cart, albeit at a 66% loss
-		
-		
+
+
 		Future Changes:
 			I think that damage resistance needs to be interpolated - 10% vulnerability at max health, 90% damage resistance at 1 HP (resistance during entire cloak duration, calculated value on attack that triggers feign)
-		
-		
-		
-		
+
+
+
+
 		*/
 
-		function DeadRinger(weapon, player) {
+		function DeadRinger(weapon, player)
+		{
 			weapon.AddAttribute("set cloak is feign death",1,-1)					// Use the feign cloak type to grant damage resistance, speed, and drop a fake corpse
-			weapon.AddAttribute("ReducedCloakFromAmmo",0.1,-1)						// Although Dead Ringer spam was rightfully nerfed, removing the ability to get cloak from ammo was overkill IMO	
-			weapon.AddAttribute("cloak_consume_on_feign_death_activate",0.8,-1)	// Gotta have downsides
+			// weapon.AddAttribute("ReducedCloakFromAmmo",0.1,-1)						// Although Dead Ringer spam was rightfully nerfed, removing the ability to get cloak from ammo was overkill IMO
+			// weapon.AddAttribute("cloak_consume_on_feign_death_activate",0.8,-1)	// Gotta have downsides
 			//notice the lack of faster regen and longer cloak duration. The added ability to get cloak from ammo boxes offsets this pretty well IMO
+			// printl(player.ReturnWeapon("Conniver's Kunai")==null)
 
+			if(player.ReturnWeapon("Conniver's Kunai")!=null) {
+				printl("You have a Kunai")
+				weapon.AddAttribute("max health additive penalty",-5,-1)
+			}
+
+
+
+			if( weapon.ValidateScriptScope() )
+			{
+				//	1 tick is half a second
+				const THINK_DELAY = 0.1
+				local entityscript = weapon.GetScriptScope()
+				local ideal_damage_resistance
+				local invis_time = 0
+				entityscript["CheckHealth"] <- function()
+					{
+						// local percent_health = player.GetHealth().tofloat() / player.GetMaxHealth().tofloat()
+
+
+						printl(player.IsViewingCYOAPDA2())
+
+						return THINK_DELAY
+					}
+					AddThinkToEnt(weapon, "CheckHealth")
+
+			}
 		}
 
 		RegisterCustomWeapon("Dead Ringer 2", "Dead Ringer", false, DeadRinger,null , null)
+
+
+
 	//-----------------------------------------------------------------------------------------------------------------------------
 
 	//-----------------------------------------------------------ENFORCER---------------------------------------------------------
-		
+
 		/*
 		//	script GetListenServerHost().GiveWeapon("Enforcer 2")
-		
+
 
 		The enforcer, as is, is not very good. It fires slow, and rarely offers a damage bonus as you have to both be disguised and hit the first shot
 
@@ -91,14 +128,14 @@ https://developer.valvesoftware.com/wiki/List_of_TF2_Script_Functions
 			- -33% clip size
 			- damage bonus while disguise nerfed from 20% to 10% to counteract damage buff
 
-		
-		
+
+
 		Future Changes:
 			I think that damage resistance needs to be interpolated - 10% vulnerability at max health, 90% damage resistance at 1 HP (resistance during entire cloak duration, calculated value on attack that triggers feign)
-		
-		
-		
-		
+
+
+
+
 		*/
 
 		function Enforcer(weapon, player) {
@@ -108,7 +145,7 @@ https://developer.valvesoftware.com/wiki/List_of_TF2_Script_Functions
 			weapon.AddAttribute("crit mod disabled",1,-1)					//	No random critical hits
 
 			weapon.AddAttribute("clip size penalty",0.66,-1)					//	4 rounds per clip
-			weapon.AddAttribute("damage bonus",1.1,-1)							//	
+			weapon.AddAttribute("damage bonus",1.1,-1)							//
 
 			//notice the lack of faster regen and longer cloak duration. The added ability to get cloak from ammo boxes offsets this pretty well IMO
 
@@ -128,7 +165,7 @@ https://developer.valvesoftware.com/wiki/List_of_TF2_Script_Functions
 		//	script GetListenServerHost().GiveWeapon("Silent Stabber")
 
 		/*
-		Kill the enemy, leave no trace 
+		Kill the enemy, leave no trace
 		silent killer
 		*/
 
@@ -156,20 +193,22 @@ https://developer.valvesoftware.com/wiki/List_of_TF2_Script_Functions
 		//	script GetListenServerHost().GiveWeapon("Backstabbers Backpack")
 
 		/*
-		
+
 		*/
 
 		function BackstabbersBackpack(weapon, player) {
+
+
 			// const DAMAGE_RESISTANCE = 0.1	//10%
 			weapon.AddAttribute("cloak meter regen rate",20,-1)						//	+X% cloak regen rate
 			weapon.AddAttribute("health regen",4,-1)										//	+X health regenerated per second on wearer
-			
+
 
 			weapon.AddAttribute("dmg taken from fire reduced",0.7,-1)					//	+X% fire damage resistance on wearer
 			weapon.AddAttribute("dmg taken from crit reduced",0.7,-1)					//	+X% critical hit damage resistance on wearer
 			weapon.AddAttribute("dmg taken from blast reduced",0.7,-1)					//	+X% explosive damage resistance on wearer
 			weapon.AddAttribute("dmg taken from bulets reduced",0.7,-1)					//	+X% bullet damage resistance on wearer
-			
+
 			weapon.AddAttribute("cloak regen rate decreased",1,-1)					//	+X% bullet damage resistance on wearer
 
 
@@ -183,9 +222,9 @@ https://developer.valvesoftware.com/wiki/List_of_TF2_Script_Functions
 
 	//-----------------------------------------------------------------------------------------------------------------------------
 
-	
 
-	
+
+
 
 
 
