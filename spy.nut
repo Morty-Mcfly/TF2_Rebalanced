@@ -9,7 +9,7 @@
 
 //--------------------------------------------------------------||-------------------------------------------------------------
 	//	script_execute give_tf_weapon/_master
-	//	script_reload_code give_tf_weapon/custom_weapons
+	//	script_reload_code give_tf_weapon/spy
 	//	script GetListenServerHost().GiveWeapon("My Weapon Here")
 	//	script_execute give_tf_weapon/_master
 
@@ -40,8 +40,8 @@
 		function Ambassador(weapon, player) {
 			weapon.AddAttribute("revolver use hit locations", 1, -1)	//	Use body groups. Allows Ambassador to headshot
 			weapon.AddAttribute("damage penalty",0.85,-1)				//	Reduce damage by 15% so headshots do 102 damage
-			weapon.AddAttribute("fire rate penalty",0.8,-1)				//	20% slower firing speed
-			// printl(player.CheckItems())
+			weapon.AddAttribute("fire rate penalty",1.2,-1)				//	20% slower firing speed
+
 
 		}
 
@@ -60,7 +60,7 @@
 
 		The following changes have been made:
 
-			- The Dead ringer can now replenish cloak via ammo pickups, dispensers, and payload cart, albeit at a 66% loss
+			- The Dead ringer can now replenish cloak via ammo pickups, dispensers, and payload cart, albeit at a 90% loss
 
 
 		Future Changes:
@@ -73,38 +73,26 @@
 
 		function DeadRinger(weapon, player)
 		{
-			weapon.AddAttribute("set cloak is feign death",1,-1)					// Use the feign cloak type to grant damage resistance, speed, and drop a fake corpse
-			// weapon.AddAttribute("ReducedCloakFromAmmo",0.1,-1)						// Although Dead Ringer spam was rightfully nerfed, removing the ability to get cloak from ammo was overkill IMO
-			// weapon.AddAttribute("cloak_consume_on_feign_death_activate",0.8,-1)	// Gotta have downsides
+			weapon.AddAttribute("set cloak is feign death",1,-1)
+			weapon.AddAttribute("ReducedCloakFromAmmo",0.25,-1)
+			weapon.AddAttribute("cloak consume rate decreased",0.5,-1)
+			weapon.AddAttribute("mult cloak meter regen rate",1.5,-1)
 			//notice the lack of faster regen and longer cloak duration. The added ability to get cloak from ammo boxes offsets this pretty well IMO
 			// printl(player.ReturnWeapon("Conniver's Kunai")==null)
 
 			if(player.ReturnWeapon("Conniver's Kunai")!=null) {
-				printl("You have a Kunai")
 				weapon.AddAttribute("max health additive penalty",-5,-1)
 			}
 
+			if(player.ReturnWeapon("YER")) {
 
 
-			if( weapon.ValidateScriptScope() )
-			{
-				//	1 tick is half a second
-				const THINK_DELAY = 0.1
-				local entityscript = weapon.GetScriptScope()
-				local ideal_damage_resistance
-				local invis_time = 0
-				entityscript["CheckHealth"] <- function()
-					{
-						// local percent_health = player.GetHealth().tofloat() / player.GetMaxHealth().tofloat()
-
-
-						printl(player.IsViewingCYOAPDA2())
-
-						return THINK_DELAY
-					}
-					AddThinkToEnt(weapon, "CheckHealth")
-
+				weapon.RemoveAttribute("mult cloak meter regen rate")
+				weapon.AddAttribute("NoCloakWhenCloaked", 1, -1)
+				weapon.AddAttribute("mult cloak meter regen rate",2,-1)
 			}
+
+
 		}
 
 		RegisterCustomWeapon("Dead Ringer 2", "Dead Ringer", false, DeadRinger,null , null)
@@ -169,21 +157,16 @@
 		silent killer
 		*/
 
-		function SilentStabber(weapon, player) {
-				weapon.AddAttribute("silent killer",1,-1)				// Silent Killer
-				weapon.AddAttribute("disguise on backstab",1,-1)		// disguise on backstab(TEST)
-				weapon.AddAttribute("damage penalty",0.1,-1)			// Half Damage bleeding duration
-				weapon.AddAttribute("bleeding duration",3,-1)			// Half Damage
-				weapon.AddAttribute("hit self on miss",1,0)			// Hit yourself on a miss
+		function SilentStabber(weapon, player)
+		{
+				weapon.AddAttribute("silent killer",1,-1)					// Silent Killer
+				weapon.AddAttribute("disguise on backstab",1,-1)			// disguise on backstab(TEST)
+				weapon.AddAttribute("bleeding duration",3,-1)					// Half Damage
+				weapon.AddAttribute("hit self on miss",1,0)						// Hit yourself on a miss
 				weapon.AddAttribute("mod_disguise_consumes_cloak",1,0)			// Hit yourself on a miss
-
-
-
-
-
 		}
 
-			RegisterCustomWeapon("Silent Stabber", "Wanga Prick", false, SilentStabber, null, null)	//register the weapon
+			RegisterCustomWeapon("Silent Stabber", "Knife", false, SilentStabber, null, null)	//register the weapon
 
 	//-----------------------------------------------------------------------------------------------------------------------------
 
@@ -200,16 +183,24 @@
 
 
 			// const DAMAGE_RESISTANCE = 0.1	//10%
-			weapon.AddAttribute("cloak meter regen rate",20,-1)						//	+X% cloak regen rate
+			weapon.AddAttribute("mult cloak meter regen rate",1.2,-1)						//	+20% cloak regen rate
 			weapon.AddAttribute("health regen",4,-1)										//	+X health regenerated per second on wearer
 
 
 			weapon.AddAttribute("dmg taken from fire reduced",0.7,-1)					//	+X% fire damage resistance on wearer
-			weapon.AddAttribute("dmg taken from crit reduced",0.7,-1)					//	+X% critical hit damage resistance on wearer
+			weapon.AddAttribute("dmg taken from bullet reduced",0.7,-1)					//	+X% critical hit damage resistance on wearer
 			weapon.AddAttribute("dmg taken from blast reduced",0.7,-1)					//	+X% explosive damage resistance on wearer
-			weapon.AddAttribute("dmg taken from bulets reduced",0.7,-1)					//	+X% bullet damage resistance on wearer
 
-			weapon.AddAttribute("cloak regen rate decreased",1,-1)					//	+X% bullet damage resistance on wearer
+			if(player.ReturnWeapon("Dead Ringer"))
+			{
+				weapon.AddAttribute("mod_cloak_no_regen_from_items", 1, -1)
+
+			}
+			else
+			{
+				weapon.AddAttribute("SET BONUS: cloak blink time penalty", 0.2, -1)
+			}
+
 
 
 
@@ -218,7 +209,7 @@
 
 		}
 
-			RegisterCustomWeapon("Backstabbers Backpack", "Sapper", true, BackstabbersBackpack, null, null)	//register the weapon
+			RegisterCustomWeapon("Backstabbers Backpack", "Red-Tape", false, BackstabbersBackpack, null, null)	//register the weapon
 
 	//-----------------------------------------------------------------------------------------------------------------------------
 
@@ -236,88 +227,35 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	function OnGameEvent_post_inventory_application(params)
+	//when we update our inventory...
+	{
+		if ("userid" in params)//and we can confirm a player is resupplying...
+		{
+			local player = GetPlayerFromUserID(params.userid)
+			if (player.GetPlayerClass() == Constants.ETFClass.TF_CLASS_SPY)	//and they are a spy...
+			{
+				if (player.ReturnWeapon("Dead Ringer"))//If they have the Dead Ringer equipped...
+				{
+					player.GiveWeapon("Dead Ringer 2")	//give them the new version
+				}
+
+				if (player.ReturnWeapon("Ambassador"))//If they have the Ambassador equipped..
+				{
+					player.GiveWeapon("Ambassador 2")//give them the new version
+				}
+				if (player.ReturnWeapon("Enforcer"))//If they have the Ambassador equipped..
+				{
+					player.GiveWeapon("Enforcer 2")//give them the new version
+				}
+
+
+
+
+			}
+		}
+	}
+	// __CollectEventCallbacks(this, "OnGameEvent_", "GameEventCallbacks", RegisterScriptGameEventListener)//Hookonto game events
 
 
 
