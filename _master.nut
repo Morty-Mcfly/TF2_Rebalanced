@@ -20,7 +20,7 @@ function OnGameEvent_post_inventory_application(params)
 	}
 }
 	__CollectEventCallbacks(this, "OnGameEvent_", "GameEventCallbacks", RegisterScriptGameEventListener)	//<-- Must be after ANY OnGameEvent!
-	
+
 // The prior event should be deleted so it doesn't conflict with another `post_inventory_application` event. //
 // Include the rest of this script! //
 
@@ -76,18 +76,12 @@ function clamp(min_value,max_value,num) {
 
 
 //include library scripts
-	IncludeScript("give_tf_weapon/tables.nut")	// AllTF2 weapons listed in tables
-	IncludeScript("give_tf_weapon/code.nut")	// All give_tf_weapon code
+IncludeScript("give_tf_weapon/tables.nut")	// AllTF2 weapons listed in tables
+IncludeScript("give_tf_weapon/code.nut")	// All give_tf_weapon code
 
 
-//Include each class's custom weapons and reworks
-	// IncludeScript("give_tf_weapon/scout.nut")	// All of scout's custom weapons
-	// IncludeScript("give_tf_weapon/soldier.nut")	// All of soldier's custom weapons
-	// IncludeScript("give_tf_weapon/pyro.nut")		// All of pyro's custom weapons
-	// IncludeScript("give_tf_weapon/demoman.nut")	// All of demoman's custom weapons
-	// IncludeScript("give_tf_weapon/heavy.nut")	// All of heavy's custom weapons
-	// IncludeScript("give_tf_weapon/engineer.nut")	// All of engineer's custom weapons
-	// IncludeScript("give_tf_weapon/medic.nut")	// All of medic's custom weapons
-	// IncludeScript("give_tf_weapon/sniper.nut")	// All of sniper's custom weapons
-	IncludeScript("give_tf_weapon/spy.nut")		// All of spy's custom weapons
+
+IncludeScript("give_tf_weapon/spy.nut")
+
+
 

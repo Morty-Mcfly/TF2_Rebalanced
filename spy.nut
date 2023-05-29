@@ -144,9 +144,6 @@
 
 
 
-
-//
-
 //SPY CUSTOM
 	//--------------------------------------------------------SILENT STABBER-------------------------------------------------------
 
@@ -163,7 +160,7 @@
 				weapon.AddAttribute("disguise on backstab",1,-1)			// disguise on backstab(TEST)
 				weapon.AddAttribute("bleeding duration",3,-1)					// Half Damage
 				weapon.AddAttribute("hit self on miss",1,0)						// Hit yourself on a miss
-				weapon.AddAttribute("mod_disguise_consumes_cloak",1,0)			// Hit yourself on a miss
+				weapon.AddAttribute("mod_disguise_consumes_cloak",1,0)			// Consume cloak on disguise
 		}
 
 			RegisterCustomWeapon("Silent Stabber", "Knife", false, SilentStabber, null, null)	//register the weapon
@@ -219,6 +216,30 @@
 
 
 
+	//------------------------------------------------------------Big Kill-----------------------------------------------------------
+
+		function Big_Kill(weapon, player)
+		{
+			weapon.AddAttribute("weapon spread bonus", 0.1, -1)
+			weapon.AddAttribute("scattergun has knockback", 1, -1)
+			weapon.AddAttribute("damage bonus", 5.7, -1)
+			weapon.AddAttribute("fire rate penalty", 0.7, -1)
+
+			weapon.AddAttribute("bullets per shot bonus", 0.1, -1)
+			weapon.AddAttribute("scattergun no reload single", 1, -1)//0.143
+			weapon.AddAttribute("Reload time decreased", 0.5, -1)
+			// weapon.AddAttribute("damage penalty", 0.143, -1)
+		}
+		//models.weapons.c_models.c_ttg_sam_gun.c_ttg_sam_gun.mdl
+		RegisterCustomWeapon("BK", "Scattergun", false, Big_Kill, null, null)	//register the weapon
+
+
+
+
+
+
+	//----------------------------------------------------Auto update inventory------------------------------------------------------
+
 
 
 
@@ -248,7 +269,26 @@
 				{
 					player.GiveWeapon("Enforcer 2")//give them the new version
 				}
+				if (player.ReturnWeapon("Diamondback"))//If they have the Ambassador equipped..
+				{
+					player.GiveWeapon("BK")//give them the new version
+				}
 
+				if (player.ReturnWeapon("Connivers Kunai"))//If they have the Ambassador equipped..
+				{
+					player.GiveWeapon("Kunai")//give them the new version
+				}
+				if(player.ReturnWeapon("Red-Tape Recorder") )
+				{
+					local weapon = player.ReturnWeapon("Red-Tape Recorder")
+					weapon.AddAttribute("sapper health bonus",2.5,-1)
+					weapon.AddAttribute("sapper damage penalty",3,-1)
+					weapon.RemoveAttribute("sapper degenerates buildings")
+					weapon.AddAttribute("sapper damage leaches health",3,-1)
+				}
+				if(player.ReturnWeapon("Sapper"))
+				{
+				}
 
 
 

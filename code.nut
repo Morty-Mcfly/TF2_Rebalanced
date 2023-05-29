@@ -13,18 +13,18 @@ Notes to Users
  - When using GiveWeapon, weapon strings for unlocks don't need "The " in them. (i.e. "The Sandvich" is invalid, but "Sandvich" is acceptable)
  --> Also accepts handles, as well as item index values (from items_game.txt)
  - GiveWeapon also returns the weapon as a handle. So you can add attributes to the weapon!
- - Given/Custom weapons don't delete themselves on respawn. 
+ - Given/Custom weapons don't delete themselves on respawn.
  ->Add function `CTFPlayer.GTFW_Cleanup` to your `post_inventory_application` event to delete any unused weapons/viewmodels attached to the player.
  --> Please place at the beginning!
  --> Needs a player handle to clear weapons from.
-	
+
 Clarification
 		-> CTFPlayer = handle ID for your player's entity (aka player's serial number), called hPlayer all throughout examples.
 	The following list are acceptable parameters for searching for weapons:
 		-> Handles (aka the weapon ID's serial number)
 		-> Classnames of weapons (i.e. "tf_weapon_wrench")
 		-> items_game.txt weapon IDs are 0 and above (i.e. 7) (7 is the stock wrench)
-		-> Slots, using TF_WEAPONSLOTS with slot type. 
+		-> Slots, using TF_WEAPONSLOTS with slot type.
 			-> TF_WEAPONSLOTS.PRIMARY, for example, gets all slots in the primary slot.
 			Also acceptable:
 			TF_WEAPONSLOTS.SECONDARY
@@ -75,8 +75,8 @@ PUBLIC OPERATIONS
 		Probably don't use this unless your ent count to skyrocket per player using this. Each weapon VM needs an ent to make this work!
 		You need to update it every time the player touches the resupply.
 		Returns arms_model as handle.
-		
-		
+
+
 PRIVATE OPERATIONS
  Functions used only in this file or debugging. Don't use unless you know what you're doing.
 	GetItemID(weapon)
@@ -131,10 +131,10 @@ Examples of Uses
 			Deletes only stock Minigun with this ID
 		USE: hPlayer.DeleteWeapon(TF_WEAPONSLOTS.PRIMARY)
 			Deletes all primaries
-		USE: hPlayer.DeleteWeapon(TF_WEAPONSLOTS.MELEE)	
+		USE: hPlayer.DeleteWeapon(TF_WEAPONSLOTS.MELEE)
 			Deletes all melees
 	CTFPlayer.DisableWeapon(weapon_classname_or_id_or_string)
-		USE: hPlayer.DisableWeapon(TF_WEAPONSLOTS.SECONDARY) 
+		USE: hPlayer.DisableWeapon(TF_WEAPONSLOTS.SECONDARY)
 			Removes all ammo from any secondary.
 		USE: hPlayer.DeleteWeapon("Minigun")
 			Removes all ammo from the minigun
@@ -210,7 +210,7 @@ const GLOBAL_WEAPON_COUNT = 7
 	if ( this in PlayerLoadoutGlobal_AmmoFix ) {
 		delete PlayerLoadoutGlobal_AmmoFix[this]
 	}
-	
+
 }
 
 
@@ -245,9 +245,9 @@ const GLOBAL_WEAPON_COUNT = 7
 		GTFW_DevPrint("give_tf_weapon ERROR: IS_CUSTOM failed. Invalid parameters. Returning null.")
 		return null
 	}
-	
+
 	local CUSTOM_ID = abs(NetProps.GetPropInt(weapon, "m_AttributeManager.m_Item.m_iItemIDHigh"))
-	
+
 	if ( bool ) {
 		NetProps.SetPropInt(weapon, "m_AttributeManager.m_Item.m_iItemIDHigh", abs(CUSTOM_ID) | (1 << 6) )	//means our weapon is custom
 	}
@@ -262,9 +262,9 @@ const GLOBAL_WEAPON_COUNT = 7
 		GTFW_DevPrint("give_tf_weapon ERROR: IS_UNINTENDED failed. Invalid parameters. Returning null.")
 		return null
 	}
-	
+
 	local UNINTENDED_ID = abs(NetProps.GetPropInt(weapon, "m_AttributeManager.m_Item.m_iItemIDHigh"))
-	
+
 	if ( bool ) {
 		NetProps.SetPropInt(weapon, "m_AttributeManager.m_Item.m_iItemIDHigh", abs(UNINTENDED_ID) | (1 << 5) )	//means our weapon is unintended
 	}
@@ -280,7 +280,7 @@ const GLOBAL_WEAPON_COUNT = 7
 //	-> See top of script for more info
 //-----------------------------------------------------------------------------
 ::CTFPlayer.SwitchToActive <- function(NewGun)
-{ 	
+{
 // Finds a weapon to switch to if:
 // The weapon is not on the list of Misc weapons, is not a melee, and weight is greater or equal to 2,
 // if not, then checks if the weapon is not in slot5, nor slot6, and is a melee,
@@ -292,7 +292,7 @@ const GLOBAL_WEAPON_COUNT = 7
 		for (local i = 0; i < GLOBAL_WEAPON_COUNT; i++)
 		{
 			wep = NetProps.GetPropEntityArray(this, "m_hMyWeapons", i)
-			
+
 			if ( SearchTimes == 0 && wep && SearchMiscWeapons.find(wep.GetClassname()) == null && !wep.IsMeleeWeapon() && wep.GetWeight() >= 2 ) {
 				SwitchTo = wep
 				break
@@ -315,7 +315,7 @@ const GLOBAL_WEAPON_COUNT = 7
 			}
 		}
 	}
-	
+
 	this.Weapon_Switch(SwitchTo)
 	return SwitchTo
 }
@@ -332,7 +332,7 @@ const GLOBAL_WEAPON_COUNT = 7
 		{
 			local wep = NetProps.GetPropEntityArray(this, "m_hMyWeapons", i)
 			local wepID = GetItemID(wep)
-			
+
 			if ( wep && wep.GetClassname() == "tf_weapon_robot_arm" || wepID == 142 )
 			{
 				return true
@@ -354,13 +354,13 @@ const GLOBAL_WEAPON_COUNT = 7
 	}
 	local ItemID = GetItemID(weapon)
 	local baseitem = weapon
-	
+
 	if ( NetProps.HasProp(weapon, "m_AttributeManager.m_Item.m_iItemDefinitionIndex") ) { //if a weapon handle
 		if ( IS_CUSTOM(weapon, false) ) { //if custom
 			ItemID = NetProps.GetPropInt(weapon, "m_AttributeManager.m_Item.m_iItemDefinitionIndex") | (1 << 20)  //sets bit 20 for searching in ReturnWeaponTable
 		}
 	}
-	
+
 	if ( SearchBySlotsParameters.find(weapon) && weapon != 0 ) {
 		for (local i = 0; i < GLOBAL_WEAPON_COUNT; i++)
 		{
@@ -400,7 +400,7 @@ const GLOBAL_WEAPON_COUNT = 7
 			return null
 		}
 		baseitem = GTFW_SearchEquipReg(weapon)
-		
+
 		if ( baseitem ) {
 			baseitem = this.GTFW_PostWepFix(baseitem)
 			return baseitem
@@ -413,7 +413,7 @@ const GLOBAL_WEAPON_COUNT = 7
 			}
 		}
 	}
-	
+
 	GTFW_DevPrint("give_tf_weapon ERROR: ReturnWeaponTable failed. Could not find weapon. Returning null.")
 	return null
 }
@@ -430,14 +430,14 @@ const GLOBAL_WEAPON_COUNT = 7
 	local Continue = true
 	local ID	= null
 	local wepTable = null
-	
+
 	foreach (exists in TF_CUSTOM_WEAPONS_REGISTRY)
 	{
 		if ( exists.itemString == baseitem )
 		{
 			ID = exists.itemID
 			wepTable = GTFW_PreWepFix(exists, ID)
-			
+
 			Continue = false
 			return wepTable
 		}
@@ -445,7 +445,7 @@ const GLOBAL_WEAPON_COUNT = 7
 		{
 			ID = exists.itemID
 			wepTable = GTFW_PreWepFix(exists, ID)
-				
+
 			Continue = false
 			return wepTable
 		}
@@ -458,16 +458,16 @@ const GLOBAL_WEAPON_COUNT = 7
 			{
 				ID = exists.itemID
 				wepTable = GTFW_PreWepFix(exists, ID)
-				
+
 				Continue = false
 				return wepTable
 			}
 			else if ( exists.itemID == baseitem )
 			{
 				ID = exists.itemID
-				
+
 				wepTable = GTFW_PreWepFix(exists, ID)
-				
+
 				Continue = false
 				return wepTable
 			}
@@ -521,9 +521,9 @@ const GLOBAL_WEAPON_COUNT = 7
 					else if ( exists.itemID13 == baseitem ) {
 						ID = exists.itemID13
 					}
-					
+
 					wepTable = GTFW_PreWepFix(exists, ID)
-					
+
 					return wepTable
 				}
 			}
@@ -547,10 +547,10 @@ const GLOBAL_WEAPON_COUNT = 7
 	if ( "tf_class" in exists ) {
 		tf_class = exists.tf_class
 	}
-	else { 
+	else {
 		tf_class = 0
 	}
-	
+
 	if ( "func" in exists ) {
 		func = exists.func
 		clear_stats = exists.clear_stats
@@ -569,9 +569,9 @@ const GLOBAL_WEAPON_COUNT = 7
 	local clip		= exists.clip
 	local reserve	= exists.reserve
 	local wearable	= exists.wearable
-	
+
 	local baseitem	= TF_WEAPONS_BASE(tf_class, slot, className, itemID, ammo_type, clip, reserve, w_model, v_model, wearable, clear_stats, func, class_arms)
-	
+
 	return baseitem
 }
 
@@ -586,7 +586,7 @@ const GLOBAL_WEAPON_COUNT = 7
 		return
 	}
 	local baseC = baseitem.className
-	
+
 	if ( baseC == "demoshield" )
 	{
 		baseitem.className = "tf_wearable_demoshield"
@@ -672,7 +672,7 @@ const GLOBAL_WEAPON_COUNT = 7
 		}
 	}
 	else { baseitem.className = "tf_weapon_"+baseitem.className	}
-	
+
 	return baseitem
 }
 
@@ -686,45 +686,45 @@ const GLOBAL_WEAPON_COUNT = 7
 		itemindex = itemindex & ~(1 << 20)
 	}
 	local weapon = Entities.CreateByClassname(classname)
-	
+
 	NetProps.SetPropInt(weapon, "m_AttributeManager.m_Item.m_iItemDefinitionIndex", itemindex)
 	NetProps.SetPropInt(weapon, "m_AttributeManager.m_Item.m_iEntityQuality", RandomInt(1,100) )
 	NetProps.SetPropInt(weapon, "m_AttributeManager.m_Item.m_iEntityLevel", 0)
 	NetProps.SetPropInt(weapon, "m_AttributeManager.m_Item.m_bInitialized", 1)
 	//NetProps.SetPropInt(weapon, "m_AttributeManager.m_Item.m_iAccountID", -1)	//Can't find due to security risks set by vscript
-	
+
 	NetProps.SetPropInt(weapon, "m_bClientSideAnimation", 1)
 	NetProps.SetPropInt(weapon, "m_fEffects", 129)
 	//NetProps.SetPropInt(weapon, "m_iState", 2)	//not needed
 	NetProps.SetPropInt(weapon, "m_CollisionGroup", 11)
-	
+
 	local curTime = Time()
 	NetProps.SetPropFloat(weapon, "LocalActiveWeaponData.m_flNextPrimaryAttack", curTime)
 	NetProps.SetPropFloat(weapon, "LocalActiveWeaponData.m_flNextSecondaryAttack", curTime)
 	NetProps.SetPropFloat(weapon, "LocalActiveWeaponData.m_flTimeWeaponIdle", curTime)
-	
+
 	NetProps.SetPropInt(weapon, "m_bValidatedAttachedEntity", 1)
 	//NetProps.SetPropInt(weapon, "m_AttributeManager.m_Item.m_bOnlyIterateItemViewAttributes", 1)	// Removes all pre-existing stats of the weapon.
 	NetProps.SetPropInt(weapon, "m_AttributeManager.m_iReapplyProvisionParity", 3)
-	
+
 	weapon.SetAbsOrigin(Vector(0,0,0))
 	weapon.SetAbsAngles(QAngle(0,0,0))
-	
+
 	NetProps.SetPropInt(weapon, "m_iTeamNum", this.GetTeam())
 	NetProps.SetPropEntity(weapon, "m_hOwnerEntity", this)
 	NetProps.SetPropEntity(weapon, "m_hOwner", this)
 	weapon.SetOwner(null);
 	weapon.SetOwner(this);
-	
+
 	Entities.DispatchSpawn(weapon)
 	weapon.ReapplyProvision()
-	
+
 	local solidFlags = NetProps.GetPropInt(weapon, "m_Collision.m_usSolidFlags");
 	NetProps.SetPropInt(weapon, "m_Collision.m_usSolidFlags", solidFlags | Constants.FSolid.FSOLID_NOT_SOLID);
-	
+
 	solidFlags = NetProps.GetPropInt(weapon, "m_Collision.m_usSolidFlags");
 	NetProps.SetPropInt(weapon, "m_Collision.m_usSolidFlags", solidFlags & ~(Constants.FSolid.FSOLID_TRIGGER));
-	
+
 	if ( classname != "tf_wearable_demoshield" || classname != "tf_wearable" || classname != "tf_wearable_razorback" )
 	{
 		NetProps.SetPropEntityArray(this, "m_hMyWeapons", weapon, slot)
@@ -733,7 +733,7 @@ const GLOBAL_WEAPON_COUNT = 7
 	weapon.SetLocalAngles(this.GetAbsAngles())
 	DoEntFire("!self", "SetParent", "!activator", 0, this, weapon)
 	NetProps.SetPropInt(weapon, "m_MoveType", 0)
-	
+
 
 //If added weapon is not intended to be used by player's tfclass, mark it as unintended for the tfclass, to fix VM arms
 	local addedWep = this.ReturnWeaponTable(itemindex)
@@ -769,11 +769,11 @@ const GLOBAL_WEAPON_COUNT = 7
 		GTFW_DevPrint("give_tf_weapon: CVAR_GTFW_USE_VIEWMODEL_FIX = false. UpdateArms cancelled.")
 		return
 	}
-	
+
 /* Purpose: This is the special VM fix.
  it creates class arms that bonemerge with VM
 */
-		
+
 // Table for bonemerged class arms, per player.
 // Adds a class arms model if nothing has parented to the main_viewmodel
 	if ( !( this in PlayerLoadoutGlobal_BonemergedArms ) ) {
@@ -785,16 +785,16 @@ const GLOBAL_WEAPON_COUNT = 7
 	*/
 		::PlayerLoadoutGlobal_BonemergedArms[this] <- wearable_handle
 	}
-	
+
 // Purpose: Writes to the tables above, which keep the class arms the weapon needs to update to when switched to.
 	for (local i = 0; i < GLOBAL_WEAPON_COUNT; i++)
 	{
 		local wep = NetProps.GetPropEntityArray(this, "m_hMyWeapons", i)
-		
+
 		if ( wep )
 		{
 			local baseitem = this.ReturnWeaponTable(GetItemID(wep))
-			
+
 			if ( baseitem ) {
 				if ( baseitem.className == "tf_weapon_pda_spy" ) {
 					wep.SetModelSimple( "models/weapons/v_models/v_pda_spy.mdl" )
@@ -846,7 +846,7 @@ const GLOBAL_WEAPON_COUNT = 7
 //	Purpose: Updates all weapon models.
 //	-> See top of script for more info
 //-----------------------------------------------------------------------------
- 
+
 ::CTFPlayer.UpdateWeapon <- function(weapon, w_model, v_model)
 {
 // Only update if the weapon is custom or is unintended for tfclass
@@ -868,11 +868,11 @@ const GLOBAL_WEAPON_COUNT = 7
 			delete PlayerLoadoutGlobal_CustomWeaponModels_VM[this][wep]
 		}
 		PlayerLoadoutGlobal_CustomWeaponModels_VM[this][wep] <- wearable_handle
-		
+
 		if ( IS_CUSTOM(weapon, false) )	//only make third person model if weapon is custom
 		{
 			wearable_handle = this.GTFW_CreateCustomWeaponModel(true, weapon, w_model)	// creates thirdperson/world model, parents and does all that stuff
-			
+
 			if ( !( this in PlayerLoadoutGlobal_CustomWeaponModels_TP ) ) {
 				PlayerLoadoutGlobal_CustomWeaponModels_TP[this] <- {}
 			}
@@ -884,7 +884,7 @@ const GLOBAL_WEAPON_COUNT = 7
 				}
 				delete PlayerLoadoutGlobal_CustomWeaponModels_TP[this][wep]
 			}
-			
+
 			PlayerLoadoutGlobal_CustomWeaponModels_TP[this][wep] <- wearable_handle
 		}
 	}
@@ -903,7 +903,7 @@ const GLOBAL_WEAPON_COUNT = 7
 	}
 	local main_viewmodel = NetProps.GetPropEntity(this, "m_hViewModel")
 	local wearable_handle = null
-	
+
 // Think script itself.
 // Reads from several tables to find weapon's class arms.
 	if( main_viewmodel.ValidateScriptScope() )
@@ -911,18 +911,18 @@ const GLOBAL_WEAPON_COUNT = 7
 		local wep = null
 
 		local player = this
-		
+
 		local entscriptname = "THINK_VM_FIX_"+this.tostring()
-		
+
 		local main_viewmodel = NetProps.GetPropEntity(this, "m_hViewModel")
-		
+
 		local DisableDrawQueue = null
 		local asdf = null
-		
+
 		local WEP_TAUNT_FIX = false
-		
+
 		const THINK_VMFIX_DELAY = 0
-		
+
 		local entityscript = main_viewmodel.GetScriptScope()
 		entityscript[entscriptname] <- function()
 		{
@@ -932,7 +932,7 @@ const GLOBAL_WEAPON_COUNT = 7
 			if ( player.InCond(7) && WEP_TAUNT_FIX ) {
 				WEP_TAUNT_FIX = false
 				wep = player.GetActiveWeapon()
-				
+
 				NetProps.SetPropEntity(DisableDrawQueue, "m_hWeaponAssociatedWith", wep)
 				NetProps.SetPropInt(wep, "m_fEffects", 161)
 				DoEntFire("!self", "Clearparent", "", 0, null, wep)
@@ -946,7 +946,7 @@ const GLOBAL_WEAPON_COUNT = 7
 			{
 				wep = player.GetActiveWeapon()
 				local wepC = wep.GetClassname()
-				
+
 		// This fixes taunts and switching away from custom weapons.
 		// It reparents and sets owner back to the player
 				if ( DisableDrawQueue )
@@ -954,17 +954,17 @@ const GLOBAL_WEAPON_COUNT = 7
 					NetProps.SetPropInt(wep, "m_iState", 0)
 					DoEntFire("!self", "RunScriptCode", "self.DisableDraw()", 0, null, DisableDrawQueue)	//using delay here purposely. Won't update b/c thinks too fast!!
 					NetProps.SetPropEntity(DisableDrawQueue, "m_hWeaponAssociatedWith", null)
-					
+
 					DoEntFire("!self", "SetParent", "!activator", 0, player, wep)
 					wep.SetOwner(player)
-					
+
 					DisableDrawQueue = null
 				}
 
 			// These are vars are for the next part
 				asdf = null
 				DisableDrawQueue = null
-				
+
 			//Checks for custom weapon and/or weapon unintended for the class.
 			//Passing as a custom weapon means it updates the weapon visibility, disables the base weapon,
 			// then adds it to the queue to be disabled when switched away
@@ -972,15 +972,15 @@ const GLOBAL_WEAPON_COUNT = 7
 				{
 					main_viewmodel.DisableDraw()		//makes firstperson weapon invisible (as well as other's class arms from the other class)
 					WEP_TAUNT_FIX = true
-					
+
 					NetProps.SetPropInt(wep, "m_iState", 0)
 					wep.EnableDraw()	//Have to send EnableDraw() first before DisableDraw(). Thanks Sorse(tm)!
 					DoEntFire("!self", "RunScriptCode", "self.DisableDraw()", 0.01, null, wep)	//using delay here purposely. Won't update b/c thinks too fast!!
-					
+
 					asdf = PlayerLoadoutGlobal_CustomWeaponModels_TP[player][wepC]	//reads from table
 					asdf.EnableDraw()
 					DoEntFire("!self", "RunScriptCode", "self.EnableDraw()", 0.01, null, asdf)	//using delay here purposely. Won't update b/c thinks too fast!!
-					
+
 					DisableDrawQueue = asdf	//custom weapon disables visibility at beginning of think script.
 				}
 				else if ( IS_UNINTENDED(wep, false) ) {
@@ -992,13 +992,13 @@ const GLOBAL_WEAPON_COUNT = 7
 
 				if ( player in PlayerLoadoutGlobal_BonemergedArms ) {
 					local bonemerged = PlayerLoadoutGlobal_BonemergedArms[player]
-					
+
 				// if ShortCircuit, disable the class arms' visibility
 					if ( wep.GetClassname() == "tf_weapon_mechanical_arm" ) { // Short Circuit
 						bonemerged.DisableDraw()
 					}
 					else if ( IS_CUSTOM(wep, false) || IS_UNINTENDED(wep, false) ) {
-						bonemerged.EnableDraw()
+						// bonemerged.EnableDraw()
 					}
 				}
 			}
@@ -1012,7 +1012,7 @@ const GLOBAL_WEAPON_COUNT = 7
 //-----------------------------------------------------------------------------
 // Purpose: Finds a weapon by slot.
 // function ReturnWeaponBySlotBool = slot number must be positive
-// function GTFW_ReturnWeaponBySlotBool = Does the same as above but slot must be negative, used by this script 
+// function GTFW_ReturnWeaponBySlotBool = Does the same as above but slot must be negative, used by this script
 //-----------------------------------------------------------------------------
 ::ReturnWeaponBySlotBool <- function(wep=null, slot=0)
 {
@@ -1062,9 +1062,9 @@ const GLOBAL_WEAPON_COUNT = 7
 		PrecacheModel(GTFW_MODEL_ARMS[10])
 		weapon_model = GetModelIndex(GTFW_MODEL_ARMS[10])
 	}
-	
+
 	local wearable_handle = null
-	
+
 // bool. If true, make a tf_wearable. If false, tf_wearable_vm.
 	if (wearabletype)
 	{
@@ -1074,8 +1074,8 @@ const GLOBAL_WEAPON_COUNT = 7
 	{
 		wearable_handle = Entities.CreateByClassname("tf_wearable_vm")
 	}
-	
-	
+
+
 // our properties. Taken from source code for Super Zombie Fortress + SCP Secret Fortress
 	wearable_handle.SetAbsOrigin(this.GetLocalOrigin())
 	wearable_handle.SetAbsAngles(this.GetLocalAngles())
@@ -1084,17 +1084,17 @@ const GLOBAL_WEAPON_COUNT = 7
 	NetProps.SetPropInt(wearable_handle, "m_Collision.m_usSolidFlags", Constants.FSolid.FSOLID_NOT_SOLID)
 	NetProps.SetPropInt(wearable_handle, "m_CollisionGroup", 11)
 	NetProps.SetPropInt(wearable_handle, "m_fEffects", 129)
-	
+
 	NetProps.SetPropInt(wearable_handle, "m_AttributeManager.m_Item.m_iEntityQuality", 0)
 	NetProps.SetPropInt(wearable_handle, "m_AttributeManager.m_Item.m_iEntityLevel", 1)
 	NetProps.SetPropInt(wearable_handle, "m_AttributeManager.m_Item.m_bInitialized", 1)
-	
+
 	NetProps.SetPropEntity(wearable_handle, "m_hOwnerEntity", this)
 	wearable_handle.SetOwner(this)
-	
+
 	NetProps.SetPropInt(wearable_handle, "m_nModelIndex", weapon_model)
 	//NetProps.SetPropInt(wearable_handle, "m_AttributeManager.m_Item.m_iItemDefinitionIndex", itemindex)
-	
+
 // for tf_wearable (non-vm)
 	if ( baseitem == null)
 	{
@@ -1125,7 +1125,7 @@ const GLOBAL_WEAPON_COUNT = 7
 		Entities.DispatchSpawn(wearable_handle)
 		DoEntFire("!self", "SetParent", "!activator", 0, this, wearable_handle)
 		wearable_handle.DisableDraw()
-		
+
 	//	DoEntFire("!self", "AddOutput", "rendermode 1", 0, this, wearable_handle)
 	//	DoEntFire("!self", "Color", "0 0 255", 0, this, wearable_handle)//colored weapons!
 	//	DoEntFire("!self", "Clearparent", "", 0, null, baseitem)	//Disables the baseitem from appearing in thirdperson. However, various bugs like weapon appearing while taunting, or firing effecting origin messing up...
@@ -1156,13 +1156,13 @@ const GLOBAL_WEAPON_COUNT = 7
 
 	Say(GetListenServerHost(), " ", false)
 	Say(GetListenServerHost(), format("Active Slot%i [%s] (ItemID = %i)", ActiveWeapon.GetSlot(), ActiveWeapon.GetClassname(), ActiveWeaponID), false)
-	
+
 	for (local i = 0; i < GLOBAL_WEAPON_COUNT; i++)
 	{
 		local wep = NetProps.GetPropEntityArray(GetListenServerHost(), "m_hMyWeapons", i)
 		local wep_itemID = GetItemID(wep)
 		ClientPrint(GetListenServerHost(), 2, i+" "+wep+" (ItemID = "+wep_itemID+")" )
-		
+
 		if ( wep && wep != ActiveWeapon)
 		{
 			Say(GetListenServerHost(), format("Slot%i [%s] (ItemID = %i)", wep.GetSlot(), wep.GetClassname(), wep_itemID), false)
@@ -1172,7 +1172,7 @@ const GLOBAL_WEAPON_COUNT = 7
 
 ::CheckAttr <- function()
 {
-	
+
 	printl(NetProps.GetPropInt(GetListenServerHost().GetActiveWeapon(), "m_AttributeManager.m_Item.m_AttributeList.m_Attributes.lengthproxy.lengthprop20"))
 	for (local i = 0; i < 10; i++)
 	{
@@ -1200,7 +1200,7 @@ const GLOBAL_WEAPON_COUNT = 7
 		GTFW_DevPrint("give_tf_weapon ERROR: GiveWeapon failed. Parameter is null. Returning null.")
 		return null
 	}
-	
+
 	local GivenWeapon = null
 // Searches for the correct item based on parameter 'weapon'...
 	local baseitem = this.ReturnWeaponTable(weapon)
@@ -1208,7 +1208,7 @@ const GLOBAL_WEAPON_COUNT = 7
 		GTFW_DevPrint("give_tf_weapon ERROR: GiveWeapon failed at finding item '"+weapon+"'. Returning null.")
 		return null
 	}
-	
+
 	local NewWeapon = baseitem.className
 	local ItemID = baseitem.itemID
 	local Slot = baseitem.slot
@@ -1216,16 +1216,16 @@ const GLOBAL_WEAPON_COUNT = 7
 	local ClipSize = baseitem.clip
 	local AmmoReserve = baseitem.reserve
 	local Extra_Wearable = baseitem.wearable
-	
+
 	local w_model = baseitem.w_model
 	local v_model = baseitem.v_model
 	local stats_function = baseitem.func
 	local class_arms = baseitem.class_arms
-	
+
 	if ( Extra_Wearable ) {
 		this.CreateCustomWearable(weapon, Extra_Wearable)	// creates a tf_wearable and associates it with a weapon
 	}
-	
+
 // Purpose: searches inventory, and adds our weapon over m_hMyWeapons slot
 // First it finds the old weapon to delete, based on slot.
 // If there is no weapon to delete, resets itself to find a `null` slot and places new weapon there.
@@ -1233,12 +1233,12 @@ const GLOBAL_WEAPON_COUNT = 7
 	local SafetyCheck = false
 	for (local i = 0; i < GLOBAL_WEAPON_COUNT; i++) {
 		local wep = NetProps.GetPropEntityArray(this, "m_hMyWeapons", i)
-		
+
 		if ( SafetyCheck == false && i == GLOBAL_WEAPON_COUNT - 1 ) {
 			i = 0
 			wep_deleted = true
 			SafetyCheck = true
-		}			
+		}
 		else if ( CVAR_GTFW_GIVEWEAPON_REPLACE_WEAPONS && wep && wep.GetSlot() == Slot ) {
 			KillWepAll(wep)
 			wep_deleted = true
@@ -1255,14 +1255,14 @@ const GLOBAL_WEAPON_COUNT = 7
 		GTFW_DevPrint("give_tf_weapon ERROR: GiveWeapon failed at giving weapon '"+weapon+"'. Returning null.")
 		return null
 	}
-	
+
 // Purpose: Adds custom model, updates arms, runs custom stats function, if any apply.
 // Updates weapon to become custom if model, function or class_arms is found in `baseitem` table.
 	if ( w_model || v_model || stats_function || class_arms )
 	{
 	// Set our weapon to custom
 		IS_CUSTOM(GivenWeapon, true)	//marks our weapon as custom
-		
+
 	 // Modifies ammo if ammo types don't match
 		if ( baseitem.ammo_type != GivenWeapon.GetPrimaryAmmoType() ) {
 			NetProps.SetPropInt(GivenWeapon, "LocalWeaponData.m_iPrimaryAmmoType", baseitem.ammo_type)
@@ -1278,13 +1278,13 @@ const GLOBAL_WEAPON_COUNT = 7
 			GivenWeapon.ReapplyProvision()
 		}
 	}
-	
+
 // Purpose: Forcefully changes ammo type to primary if not Spy, and if not custom
 	if ( NewWeapon == "tf_weapon_revolver" && this.GetPlayerClass != Constants.ETFClass.TF_CLASS_SPY && !IS_CUSTOM(GivenWeapon, false) )
 	{
 		NetProps.SetPropInt(GivenWeapon, "LocalWeaponData.m_iPrimaryAmmoType", TF_AMMO.PRIMARY)
 	}
-	
+
 // Purpose: Fixes ammo.
 // There is an invisible tf_wearable that tracks ammo for custom weapons, and DisableWeapon/EnableWeapon
 // Same goes for metal ammotype weapons like Widowmaker, Wrenches, PDAs etc
@@ -1328,7 +1328,7 @@ const GLOBAL_WEAPON_COUNT = 7
 		}
 	// Purpose: Applies all attributes to player
 		AmmoFix.ReapplyProvision()
-		
+
 	// Purpose: Sets ammo reserve
 		if ( AmmoType == TF_AMMO.PRIMARY && EntityOutputs.HasAction(AmmoFix, "OnUser1") == false )
 		{
@@ -1346,7 +1346,7 @@ const GLOBAL_WEAPON_COUNT = 7
 			EntityOutputs.AddOutput(AmmoFix, "OnUser3", "", "", "", 0.0, -1)	//used to flag for Metal ammo so we don't update twice
 			NetProps.SetPropIntArray(this, "m_iAmmo", AmmoReserve, TF_AMMO.METAL)
 		}
-	
+
 	// Purpose: Sets ammo clip
 		if ( ClipSize >= 0 ) {
 			if ( (ClipSize / GivenWeapon.GetMaxClip1()) != 1 ) {
@@ -1355,7 +1355,7 @@ const GLOBAL_WEAPON_COUNT = 7
 			GivenWeapon.SetClip1(ClipSize)
 		}
 	}
-	
+
 	if ( w_model == null && v_model == null ) {
 		w_model = NetProps.GetPropInt(GivenWeapon, "m_iWorldModelIndex")
 		v_model = NetProps.GetPropInt(GivenWeapon, "m_iWorldModelIndex")
@@ -1372,14 +1372,14 @@ const GLOBAL_WEAPON_COUNT = 7
 	this.UpdateArms()
 	this.UpdateWeapon(GivenWeapon, w_model, v_model)
 	this.AddThinkToViewModel()
-	
-	
+
+
 // Purpose: Switches to another weapon if active one was deleted
 	if (CVAR_GTFW_GIVEWEAPON_AUTO_SWITCH)
 	{
 		this.SwitchToActive(GivenWeapon)
 	}
-	
+
 	GTFW_DevPrint("give_tf_weapon: GiveWeapon gave '"+weapon+"' to "+this+"!")
 	return GivenWeapon
 }
@@ -1407,11 +1407,11 @@ const GLOBAL_WEAPON_COUNT = 7
 	local DeleteThis = baseitem.itemID
 	local Slot = baseitem.slot
 	local wep = null
-	
+
 	for (local i = 0; i < GLOBAL_WEAPON_COUNT; i++)
 	{
 		local wep = NetProps.GetPropEntityArray(this, "m_hMyWeapons", i)
-		
+
 		if ( wep )
 		{
 			if ( GTFW_ReturnWeaponBySlotBool(wep, weapon) )
@@ -1426,20 +1426,20 @@ const GLOBAL_WEAPON_COUNT = 7
 			}
 		}
 	}
-	
+
 // switches to another weapon if active one was deleted
 	if (CVAR_GTFW_DELETEWEAPON_AUTO_SWITCH) {
 		if ( wep == null ) {
 			this.SwitchToActive(null)
 		}
 	}
-	
+
 	return true
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: Returns weapon, searched by slot. 
+// Purpose: Returns weapon, searched by slot.
 // Requested by Lizard of Oz
 //-----------------------------------------------------------------------------
 ::CTFPlayer.ReturnWeaponBySlot <- function(slot=0)
@@ -1454,7 +1454,7 @@ const GLOBAL_WEAPON_COUNT = 7
 	for (local i = 0; i < GLOBAL_WEAPON_COUNT; i++)
 	{
 		local wep = NetProps.GetPropEntityArray(this, "m_hMyWeapons", i)
-		
+
 		if ( wep )
 		{
 			if ( ReturnWeaponBySlotBool(wep, slot) )
@@ -1490,16 +1490,16 @@ const GLOBAL_WEAPON_COUNT = 7
 		GTFW_DevPrint("give_tf_weapon ERROR: DisableWeapon failed. Could not find '"+weapon+"'. Returning null.")
 		return null
 	}
-	
+
 	local DisableThis = baseitem.itemID
-	
+
 	local BrokenGun = null
 	local wep = null
-	
+
 	for (local i = 0; i < GLOBAL_WEAPON_COUNT; i++)
 	{
 		local wep = NetProps.GetPropEntityArray(this, "m_hMyWeapons", i)
-		
+
 		if ( wep )
 		{
 			if ( GTFW_ReturnWeaponBySlotBool(wep, weapon) )
@@ -1515,7 +1515,7 @@ const GLOBAL_WEAPON_COUNT = 7
 				}
 				if ( this in PlayerLoadoutGlobal_AmmoFix ) {
 					local AmmoFix = PlayerLoadoutGlobal_AmmoFix[this]
-					
+
 					if ( wep.GetPrimaryAmmoType() == TF_AMMO.PRIMARY ) {
 						AmmoFix.AddAttribute("maxammo primary reduced", 0, -1)
 						AmmoFix.ReapplyProvision()
@@ -1539,12 +1539,12 @@ const GLOBAL_WEAPON_COUNT = 7
 			}
 		}
 	}
-	
+
 // switches to another weapon if active one was disabled
 	if (CVAR_GTFW_DISABLEWEAPON_AUTO_SWITCH) {
 		this.SwitchToActive(null)
 	}
-	
+
 	return BrokenGun
 }
 
@@ -1567,15 +1567,15 @@ const GLOBAL_WEAPON_COUNT = 7
 		GTFW_DevPrint("give_tf_weapon ERROR: EnableWeapon failed. Could not find '"+weapon+"'. Returning null.")
 		return null
 	}
-	
+
 	FixThis = baseitem.itemID
-	
+
 	local FixedGun = null
-	
+
 	for (local i = 0; i < GLOBAL_WEAPON_COUNT; i++)
 	{
 		local wep = NetProps.GetPropEntityArray(this, "m_hMyWeapons", i)
-		
+
 		if ( wep )
 		{
 			if ( GTFW_ReturnWeaponBySlotBool(wep, weapon) )
@@ -1591,7 +1591,7 @@ const GLOBAL_WEAPON_COUNT = 7
 				}
 				if ( this in PlayerLoadoutGlobal_AmmoFix ) {
 					local AmmoFix = PlayerLoadoutGlobal_AmmoFix[this]
-					
+
 					if ( wep.GetPrimaryAmmoType() == TF_AMMO.PRIMARY ) {
 						AmmoFix.AddAttribute("maxammo primary reduced", 1, -1)
 						AmmoFix.ReapplyProvision()
@@ -1613,13 +1613,13 @@ const GLOBAL_WEAPON_COUNT = 7
 			}
 		}
 	}
-	
+
 // switches to another weapon if active one was disabled
 
 	if (CVAR_GTFW_ENABLEWEAPON_AUTO_SWITCH) {
 		this.SwitchToActive(FixedGun)
 	}
-	
+
 	return FixedGun
 }
 
@@ -1649,7 +1649,7 @@ const GLOBAL_WEAPON_COUNT = 7
 	for (local i = 0; i < GLOBAL_WEAPON_COUNT; i++)
 	{
 		local wep = NetProps.GetPropEntityArray(this, "m_hMyWeapons", i)
-		
+
 		if ( wep )
 		{
 			if ( GTFW_ReturnWeaponBySlotBool(wep, searched_weapon) )
@@ -1702,7 +1702,7 @@ const GLOBAL_WEAPON_COUNT = 7
 		return
 	}
 	local main_viewmodel = NetProps.GetPropEntity(this, "m_hViewModel")
-	
+
 // Table for bonemerged class arms, per player.
 // If there is already a model, delete it.
 	if ( this in PlayerLoadoutGlobal_BonemergedArms ) {
@@ -1710,13 +1710,13 @@ const GLOBAL_WEAPON_COUNT = 7
 		arms.Kill()
 		delete PlayerLoadoutGlobal_BonemergedArms[this]
 	}
-	
+
 	local wearable_handle = this.GTFW_CreateCustomWeaponModel(false, main_viewmodel, arms_model)	// creates player class' arms, parents and does all that stuff
 
 // Puts into a table "player = arms model" for easy tracking
 	::PlayerLoadoutGlobal_BonemergedArms[this] <- wearable_handle
-	
-/*	
+
+/*
 	if ( !( this in PlayerLoadoutGlobal_AmmoFix ) ) {
 		::PlayerLoadoutGlobal_AmmoFix[this] <- {}
 		local AmmoFix = this.CreateCustomWearable(null, "models/empty.mdl")
@@ -1725,11 +1725,11 @@ const GLOBAL_WEAPON_COUNT = 7
 	if ( EntityOutputs.HasAction(AmmoFix, "OnIgnite") == false ) {
 		EntityOutputs.AddOutput(AmmoFix, "OnIgnite", "", "", "", 0.0, -1)
 	}*/
-	
+
 	for (local i = 0; i < GLOBAL_WEAPON_COUNT; i++)
 	{
 		local wep = NetProps.GetPropEntityArray(this, "m_hMyWeapons", i)
-		
+
 		if ( wep )
 		{
 			IS_UNINTENDED(wep, true)
@@ -1795,10 +1795,10 @@ However, now that SetCustomViewModel() exists, changing the main_viewmodel isn't
 		PrecacheModel(wearable_model)
 		wearable_model = GetModelIndex(wearable_model)
 	}
-	
+
 // our properties. Taken from source code for Super Zombie Fortress + SCP Secret Fortress
 	local wearable = Entities.CreateByClassname("tf_wearable")
-	
+
 	wearable.SetAbsOrigin(this.GetLocalOrigin())
 	wearable.SetAbsAngles(this.GetLocalAngles())
 	NetProps.SetPropInt(wearable, "m_bValidatedAttachedEntity", 1)
@@ -1807,11 +1807,11 @@ However, now that SetCustomViewModel() exists, changing the main_viewmodel isn't
 	NetProps.SetPropInt(wearable, "m_Collision.m_usSolidFlags", Constants.FSolid.FSOLID_NOT_SOLID)
 	NetProps.SetPropInt(wearable, "m_CollisionGroup", 11)
 	NetProps.SetPropInt(wearable, "m_fEffects", 129)
-	
+
 	NetProps.SetPropInt(wearable, "m_AttributeManager.m_Item.m_iEntityQuality", 0)
 	NetProps.SetPropInt(wearable, "m_AttributeManager.m_Item.m_iEntityLevel", 1)
 	NetProps.SetPropInt(wearable, "m_AttributeManager.m_Item.m_bInitialized", 1)
-	
+
 	NetProps.SetPropInt(wearable, "m_nModelIndex", wearable_model)
 
 	if ( weapon )
@@ -1819,11 +1819,11 @@ However, now that SetCustomViewModel() exists, changing the main_viewmodel isn't
 		NetProps.SetPropEntity(wearable, "m_hWeaponAssociatedWith", weapon)
 		NetProps.SetPropEntity(weapon, "m_hExtraWearable", wearable)
 	}
-	
+
 	Entities.DispatchSpawn(wearable)
 	DoEntFire("!self", "SetParent", "!activator", 0, this, wearable)
 	wearable.KeyValueFromString("targetname", "tf_wearable_vscript")
-	
+
 	return wearable
 }
 
@@ -1838,7 +1838,7 @@ However, now that SetCustomViewModel() exists, changing the main_viewmodel isn't
 		GTFW_DevPrint("give_tf_weapon ERROR: RegisterCustomWeapon failed. MUST use strings for custom item name and base item. Returning null.")
 		return null
 	}
-	
+
 //searches for the correct item based on parameter 'weapon'...
 //'weapon' can be a handle, string name (ex "Brass Beast"), weapon ID (from items_game.txt), or slot (negative value)
 	local baseitem = GTFW_SearchEquipReg(weapon)
@@ -1847,10 +1847,10 @@ However, now that SetCustomViewModel() exists, changing the main_viewmodel isn't
 		return null
 	}
 	local CW_ID = baseitem.itemID | (1 << 20)
-	
+
 	GTFW_DevPrint("give_tf_weapon: Registering... "+item_name)
 	::TF_CUSTOM_WEAPONS_REGISTRY[item_name] <- TF_CUSTOM_WEPS(item_name, baseitem.className, baseitem.tf_class, baseitem.slot, CW_ID, use_original_stats, stats_function, custom_arms_model, baseitem.ammo_type, baseitem.clip, baseitem.reserve, custom_weapon_model, custom_weapon_model, baseitem.wearable)
-	
+
 	GTFW_DevPrint("give_tf_weapon: Register Success!")
 }
 
@@ -1890,7 +1890,7 @@ However, now that SetCustomViewModel() exists, changing the main_viewmodel isn't
 		ammoreserve = baseitem.reserve
 	}
 	local CW_ID = baseitem.itemID | (1 << 20)
-	
+
 	::TF_CUSTOM_WEAPONS_REGISTRY[item_name] <- TF_CUSTOM_WEPS(item_name, baseitem.className, baseitem.tf_class, baseitem.slot, CW_ID, use_original_stats, stats_function, custom_arms_model, ammotype, clipsize, ammoreserve, custom_world_model, custom_view_model, custom_extra_wearable)
 }
 

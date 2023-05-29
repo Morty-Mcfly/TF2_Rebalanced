@@ -1,0 +1,22 @@
+
+
+	/*
+	The Ambassador as-is in vanilla TF2 is pretty undesirable. It takes thousands of hours to master, and is a direct downgrade from stock if you aren't breathing on your opponent
+
+	You should be rewarded for precision, regardless of range, although 102 damage from across the map should only come from Sniper, not Spy (even that's debatable)
+
+	The following changes have been made:
+
+		- Removed critical hit damage falloff
+
+	*/
+
+	function Ambassador(weapon, player) {
+		weapon.AddAttribute("revolver use hit locations", 1, -1)	//	Use body groups. Allows Ambassador to headshot
+		weapon.AddAttribute("damage penalty",0.85,-1)				//	Reduce damage by 15% so headshots do 102 damage
+		weapon.AddAttribute("fire rate penalty",1.2,-1)				//	20% slower firing speed
+
+
+	}
+
+	RegisterCustomWeapon("Ambassador 2", "Ambassador", false, Ambassador,null, null)	//register the revamped Ambassador
